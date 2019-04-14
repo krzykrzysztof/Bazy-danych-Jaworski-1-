@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/HotelApp/HotelApp/bin/Debug/netcoreapp2.1
+/HotelApp/.vs/HotelApp/v15
+/HotelApp/HotelApp/obj
+/HotelApp/HotelApp/HotelApp.csproj.user
