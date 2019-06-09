@@ -1,0 +1,13 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Hotel</a>
+}
+else
+{
+    <a asp-area="" asp-controller="Account" asp-action="Login" class="navbar-brand">Hotel</a>
+}
