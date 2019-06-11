@@ -34,12 +34,13 @@ namespace HotelApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _userManager.CreateAsync(new IdentityUser()
+                var user = new IdentityUser()
                 {
                     UserName = registerViewModel.Email.Split('@')[0],
-                    Email = registerViewModel.Email
-                }, registerViewModel.Password);
+                    Email = registerViewModel.Email,
+                };
 
+                var result = await _userManager.CreateAsync(user, registerViewModel.Password);
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Login", "Account");

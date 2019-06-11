@@ -13,6 +13,7 @@ using HotelApplication.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HotelApplication.Controllers;
+using HotelApplication.Repositories;
 
 namespace HotelApplication
 {
@@ -40,7 +41,10 @@ namespace HotelApplication
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddScoped<ReservationRepository>();
+            services.AddScoped<PaymentRepository>();
 
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/Account/Login");
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

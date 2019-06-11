@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelApplication.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190609204733_updated_data_in_tables")]
-    partial class updated_data_in_tables
+    [Migration("20190611193134_added_tables")]
+    partial class added_tables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,11 +21,42 @@ namespace HotelApplication.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("HotelApplication.Entities.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customer");
+
+                    b.HasData(
+                        new { Id = 1, FirstName = "Adam", LastName = "Gruszczynski" },
+                        new { Id = 2, FirstName = "Krzysztof", LastName = "Nowak" },
+                        new { Id = 3, Address = "ul. Krakowska 10, 50-301 Wrocław", FirstName = "Mateusz", LastName = "Kowalski" },
+                        new { Id = 4, FirstName = "Jolanta", LastName = "Szpak" }
+                    );
+                });
+
             modelBuilder.Entity("HotelApplication.Entities.Payment", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(38);
+
+                    b.Property<int>("CustomerId");
 
                     b.Property<float>("Price");
 
@@ -33,14 +64,16 @@ namespace HotelApplication.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustomerId");
+
                     b.HasIndex("ReliefId");
 
                     b.ToTable("Payment");
 
                     b.HasData(
-                        new { Id = "edb61b22-6c71-4cbf-9704-ec28762b16c2", Price = 300f, ReliefId = 3 },
-                        new { Id = "d10f33cb-1a0a-4c89-b31b-e34dad3dc9b3", Price = 500f, ReliefId = 1 },
-                        new { Id = "156df5d7-74a0-4566-8530-a49fff63bded", Price = 1000f, ReliefId = 2 }
+                        new { Id = "12fc8bbf-77c8-4c65-aa6a-86833b6318e4", CustomerId = 2, Price = 300f, ReliefId = 3 },
+                        new { Id = "90dd294e-ae11-4810-b0bc-fac02ae2a11e", CustomerId = 4, Price = 500f, ReliefId = 1 },
+                        new { Id = "8e0d2f71-40c4-4fe0-893d-13aacd1f205b", CustomerId = 1, Price = 1000f, ReliefId = 2 }
                     );
                 });
 
@@ -90,9 +123,9 @@ namespace HotelApplication.Migrations
                     b.ToTable("Reservation");
 
                     b.HasData(
-                        new { Id = 1, EndDate = new DateTime(2019, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), PaymentId = "edb61b22-6c71-4cbf-9704-ec28762b16c2", RoomId = 1, StartDate = new DateTime(2019, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                        new { Id = 2, EndDate = new DateTime(2019, 1, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), PaymentId = "d10f33cb-1a0a-4c89-b31b-e34dad3dc9b3", RoomId = 2, StartDate = new DateTime(2019, 1, 24, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                        new { Id = 3, EndDate = new DateTime(2019, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), PaymentId = "156df5d7-74a0-4566-8530-a49fff63bded", RoomId = 3, StartDate = new DateTime(2019, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                        new { Id = 1, EndDate = new DateTime(2019, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), PaymentId = "12fc8bbf-77c8-4c65-aa6a-86833b6318e4", RoomId = 1, StartDate = new DateTime(2019, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                        new { Id = 2, EndDate = new DateTime(2019, 1, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), PaymentId = "90dd294e-ae11-4810-b0bc-fac02ae2a11e", RoomId = 2, StartDate = new DateTime(2019, 1, 24, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                        new { Id = 3, EndDate = new DateTime(2019, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), PaymentId = "8e0d2f71-40c4-4fe0-893d-13aacd1f205b", RoomId = 3, StartDate = new DateTime(2019, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                     );
                 });
 
@@ -108,8 +141,6 @@ namespace HotelApplication.Migrations
                     b.Property<int>("PeopleCount")
                         .HasMaxLength(255);
 
-                    b.Property<float>("Price");
-
                     b.Property<int>("RoomTypeId");
 
                     b.HasKey("Id");
@@ -119,9 +150,9 @@ namespace HotelApplication.Migrations
                     b.ToTable("Room");
 
                     b.HasData(
-                        new { Id = 1, PeopleCount = 1, Price = 50f, RoomTypeId = 1 },
-                        new { Id = 2, PeopleCount = 2, Price = 95f, RoomTypeId = 2 },
-                        new { Id = 3, PeopleCount = 4, Price = 150f, RoomTypeId = 3 }
+                        new { Id = 1, PeopleCount = 1, RoomTypeId = 1 },
+                        new { Id = 2, PeopleCount = 2, RoomTypeId = 2 },
+                        new { Id = 3, PeopleCount = 4, RoomTypeId = 3 }
                     );
                 });
 
@@ -167,7 +198,7 @@ namespace HotelApplication.Migrations
                         .HasName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("Role");
+                    b.ToTable("AspNetRoles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -314,6 +345,11 @@ namespace HotelApplication.Migrations
 
             modelBuilder.Entity("HotelApplication.Entities.Payment", b =>
                 {
+                    b.HasOne("HotelApplication.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("HotelApplication.Entities.Relief", "Relief")
                         .WithMany()
                         .HasForeignKey("ReliefId")

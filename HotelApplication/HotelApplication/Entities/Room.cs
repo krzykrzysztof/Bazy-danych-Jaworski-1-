@@ -11,11 +11,7 @@ namespace HotelApplication.Entities
     public class Room
     {
         [Key]
-        public int Id { get; set; }
-
-        [Required]
-        [Display(Name = "Price")]
-        public float Price { get; set; }
+        public int Id { get; set; }   
 
         [StringLength(255)]
         [Display(Name = "Desc")]

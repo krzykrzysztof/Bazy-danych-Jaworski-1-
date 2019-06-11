@@ -23,5 +23,12 @@ namespace HotelApplication.Entities
         public int ReliefId { get; set; }
 
         public Relief Relief { get; set; }
+
+        //Foreign key for Customer
+        [Required]
+        [Display(Name = "Customer_Id")]
+        public int CustomerId { get; set; }
+
+        public Customer Customer { get; set; }
     }
 }

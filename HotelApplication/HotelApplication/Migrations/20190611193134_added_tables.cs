@@ -4,10 +4,39 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HotelApplication.Migrations
 {
-    public partial class init : Migration
+    public partial class added_tables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AspNetRoles",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customer",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    FirstName = table.Column<string>(maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(maxLength: 50, nullable: false),
+                    Address = table.Column<string>(maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customer", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Relief",
                 columns: table => new
@@ -20,20 +49,6 @@ namespace HotelApplication.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Relief", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Role",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Role", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -75,25 +90,6 @@ namespace HotelApplication.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payment",
-                columns: table => new
-                {
-                    Id = table.Column<string>(maxLength: 38, nullable: false),
-                    Price = table.Column<float>(nullable: false),
-                    ReliefId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payment", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Payment_Relief_ReliefId",
-                        column: x => x.ReliefId,
-                        principalTable: "Relief",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -107,9 +103,35 @@ namespace HotelApplication.Migrations
                 {
                     table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetRoleClaims_Role_RoleId",
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "Role",
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payment",
+                columns: table => new
+                {
+                    Id = table.Column<string>(maxLength: 38, nullable: false),
+                    Price = table.Column<float>(nullable: false),
+                    ReliefId = table.Column<int>(nullable: false),
+                    CustomerId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payment_Customer_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Payment_Relief_ReliefId",
+                        column: x => x.ReliefId,
+                        principalTable: "Relief",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -120,7 +142,6 @@ namespace HotelApplication.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Price = table.Column<float>(nullable: false),
                     Desc = table.Column<string>(maxLength: 255, nullable: true),
                     PeopleCount = table.Column<int>(maxLength: 255, nullable: false),
                     RoomTypeId = table.Column<int>(nullable: false)
@@ -188,9 +209,9 @@ namespace HotelApplication.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_AspNetUserRoles_Role_RoleId",
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "Role",
+                        principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -250,39 +271,82 @@ namespace HotelApplication.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Room_type",
-                columns: new[] { "Id", "Type" },
-                values: new object[] { 1, "Small" });
+                table: "Customer",
+                columns: new[] { "Id", "Address", "FirstName", "LastName" },
+                values: new object[,]
+                {
+                    { 1, null, "Adam", "Gruszczynski" },
+                    { 2, null, "Krzysztof", "Nowak" },
+                    { 3, "ul. Krakowska 10, 50-301 Wrocław", "Mateusz", "Kowalski" },
+                    { 4, null, "Jolanta", "Szpak" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Relief",
+                columns: new[] { "Id", "Code", "Discount" },
+                values: new object[,]
+                {
+                    { 1, "Summer", 20 },
+                    { 2, "2019", 10 },
+                    { 3, "Holiday", 30 }
+                });
 
             migrationBuilder.InsertData(
                 table: "Room_type",
                 columns: new[] { "Id", "Type" },
-                values: new object[] { 2, "Medium" });
+                values: new object[,]
+                {
+                    { 1, "Small" },
+                    { 2, "Medium" },
+                    { 3, "Large" }
+                });
 
             migrationBuilder.InsertData(
-                table: "Room_type",
-                columns: new[] { "Id", "Type" },
-                values: new object[] { 3, "Large" });
+                table: "Payment",
+                columns: new[] { "Id", "CustomerId", "Price", "ReliefId" },
+                values: new object[,]
+                {
+                    { "90dd294e-ae11-4810-b0bc-fac02ae2a11e", 4, 500f, 1 },
+                    { "8e0d2f71-40c4-4fe0-893d-13aacd1f205b", 1, 1000f, 2 },
+                    { "12fc8bbf-77c8-4c65-aa6a-86833b6318e4", 2, 300f, 3 }
+                });
 
             migrationBuilder.InsertData(
                 table: "Room",
-                columns: new[] { "Id", "Desc", "PeopleCount", "Price", "RoomTypeId" },
-                values: new object[] { 1, null, 1, 50f, 1 });
+                columns: new[] { "Id", "Desc", "PeopleCount", "RoomTypeId" },
+                values: new object[,]
+                {
+                    { 1, null, 1, 1 },
+                    { 2, null, 2, 2 },
+                    { 3, null, 4, 3 }
+                });
 
             migrationBuilder.InsertData(
-                table: "Room",
-                columns: new[] { "Id", "Desc", "PeopleCount", "Price", "RoomTypeId" },
-                values: new object[] { 2, null, 2, 95f, 2 });
+                table: "Reservation",
+                columns: new[] { "Id", "EndDate", "PaymentId", "RoomId", "StartDate" },
+                values: new object[] { 1, new DateTime(2019, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), "12fc8bbf-77c8-4c65-aa6a-86833b6318e4", 1, new DateTime(2019, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
-                table: "Room",
-                columns: new[] { "Id", "Desc", "PeopleCount", "Price", "RoomTypeId" },
-                values: new object[] { 3, null, 4, 150f, 3 });
+                table: "Reservation",
+                columns: new[] { "Id", "EndDate", "PaymentId", "RoomId", "StartDate" },
+                values: new object[] { 2, new DateTime(2019, 1, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), "90dd294e-ae11-4810-b0bc-fac02ae2a11e", 2, new DateTime(2019, 1, 24, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+
+            migrationBuilder.InsertData(
+                table: "Reservation",
+                columns: new[] { "Id", "EndDate", "PaymentId", "RoomId", "StartDate" },
+                values: new object[] { 3, new DateTime(2019, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "8e0d2f71-40c4-4fe0-893d-13aacd1f205b", 3, new DateTime(2019, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                table: "AspNetRoles",
+                column: "NormalizedName",
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -300,6 +364,11 @@ namespace HotelApplication.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Payment_CustomerId",
+                table: "Payment",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Payment_ReliefId",
                 table: "Payment",
                 column: "ReliefId");
@@ -313,13 +382,6 @@ namespace HotelApplication.Migrations
                 name: "IX_Reservation_RoomId",
                 table: "Reservation",
                 column: "RoomId");
-
-            migrationBuilder.CreateIndex(
-                name: "RoleNameIndex",
-                table: "Role",
-                column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Room_RoomTypeId",
@@ -360,7 +422,7 @@ namespace HotelApplication.Migrations
                 name: "Reservation");
 
             migrationBuilder.DropTable(
-                name: "Role");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "User");
@@ -370,6 +432,9 @@ namespace HotelApplication.Migrations
 
             migrationBuilder.DropTable(
                 name: "Room");
+
+            migrationBuilder.DropTable(
+                name: "Customer");
 
             migrationBuilder.DropTable(
                 name: "Relief");
