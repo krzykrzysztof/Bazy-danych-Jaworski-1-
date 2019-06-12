@@ -6,34 +6,34 @@
 
 <h2>Lista rezerwacji</h2>
 
-<div style="margin-top:35px">
-    <table class="table table-bordered table-dark">
-        <thead>
-            <tr>
-                <th scope="col">Nr. rezerwacji</th>
-                <th scope="col">Początek</th>
-                <th scope="col">Koniec</th>
-                <th scope="col">Nr. pokoju</th>
-                <th scope="col">Ilość osób</th>
-                <th scope="col">Typ pokoju</th>
-                <th scope="col">Szczegoły płatności</th>
-                
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var reservation in Model.Reservations)
-            {
+    <div style="margin-top:35px">
+        <table class="table table-bordered table-dark">
+            <thead>
                 <tr>
-                    <td>@reservation.Id</td>
-                    <td>@reservation.StartDate.ToShortDateString()</td>
-                    <td>@reservation.EndDate.ToShortDateString()</td>
-                    <td>@reservation.Room.Id</td>
-                    <td>@reservation.Room.PeopleCount</td>
-                    <td>@reservation.Room.RoomType.Type</td>
-                    <td>@Html.ActionLink(reservation.Payment.Id, "Details", "Home", new { id = reservation.Payment.Id }, null)</td>
+                    <th scope="col">Nr. rezerwacji</th>
+                    <th scope="col">Początek</th>
+                    <th scope="col">Koniec</th>
+                    <th scope="col">Nr. pokoju</th>
+                    <th scope="col">Ilość osób</th>
+                    <th scope="col">Typ pokoju</th>
+                    <th scope="col">Szczegoły płatności</th>
+
                 </tr>
-            }          
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @foreach (var reservation in Model.Reservations)
+                {
+                    <tr>
+                        <td>@reservation.Id</td>
+                        <td>@reservation.StartDate.ToShortDateString()</td>
+                        <td>@reservation.EndDate.ToShortDateString()</td>
+                        <td>@reservation.Room.Id</td>
+                        <td>@reservation.Room.PeopleCount</td>
+                        <td>@reservation.Room.RoomType.Type</td>
+                        <td>@Html.ActionLink(reservation.Payment.Id, "Details", "Home", new { id = reservation.Payment.Id }, null)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
